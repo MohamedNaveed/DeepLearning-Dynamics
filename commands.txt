@@ -1,0 +1,3 @@
+source /home/naveed/Documents/dl_torch/bin/activate
+
+jupyter notebook
