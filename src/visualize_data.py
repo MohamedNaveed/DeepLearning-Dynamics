@@ -44,7 +44,7 @@ def plot_phase_portrait(X):
 
 if __name__ == '__main__':
 
-    data = pd.read_csv('data/pendulum_initialconditions_near_90deg_traindata.csv')
+    data = pd.read_csv('/home/naveed/Documents/deep_learning/data/pendulum_exps/near90deg/testdata_90.csv')
 
     # Extract input features (X) and target labels (y)
     X = data[['Pendulum Angle (rad)', 'Angular Velocity (rad/s)']].values  # Input features

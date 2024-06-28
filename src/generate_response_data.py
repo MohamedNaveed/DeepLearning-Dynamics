@@ -4,11 +4,11 @@ import numpy as np
 import pandas as pd
 
 class pendulum():
-    def __init__(self,x0):
+    def __init__(self,x0, n_samples=1000):
         self.x0 = x0
         self.dim = 2
         self.dt = 0.01 #discretization time
-        self.n_samples = 1000 #total time
+        self.n_samples = n_samples #total time
         
     def pendulum_ode(self, x, t):
         
@@ -68,7 +68,7 @@ class pendulum():
         plt.show()
 
 
-def write_to_csv(states,dim):
+def write_to_csv(states,dim,path):
 
     dataset_size = states.shape[1]
     #print('dataset_size=', dataset_size)
@@ -79,7 +79,7 @@ def write_to_csv(states,dim):
     'Pendulum Angle next (rad)': states[0,1:dataset_size],
     'Angular Velocity next (rad/s)': states[1,1:dataset_size],})
 
-    csv_file_path = 'data/pendulum_diffinitialconditions_traindata.csv'
+    csv_file_path = path
 
     # Check if the file already exists
     try:
@@ -99,15 +99,17 @@ def write_to_csv(states,dim):
 if __name__=='__main__':
 
     # Generate random initial conditions uniformly
-    num_conditions = 100
+    num_conditions = 1
     theta0_values = np.random.uniform(low=-(np.pi/2), high=np.pi/2, size=num_conditions)
     #omega0_values = np.random.uniform(low=-2*np.pi, high=2*np.pi, size=num_conditions)
      
+    theta0_values[0] = np.pi/2
 
     for n in range(num_conditions):
-        system = pendulum(np.array([[theta0_values[n]], [0]]))
+        system = pendulum(np.array([[theta0_values[n]], [0]]),n_samples=10000)
         [timesteps, states] = system.simulate_data()
         #system.plot_response(timesteps, states)
 
-        write_to_csv(states, system.dim)
+        path = '/home/naveed/Documents/deep_learning/data/pendulum_exps/near90deg/testdata_90.csv'
+        write_to_csv(states, system.dim, path)
 
