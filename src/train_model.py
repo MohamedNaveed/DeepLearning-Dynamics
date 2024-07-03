@@ -7,6 +7,8 @@ from torchvision.transforms import ToTensor
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+from network_models import ResNet
+
 device = ("cuda"
         if torch.cuda.is_available()
         else "mps"
@@ -15,39 +17,12 @@ device = ("cuda"
 
 print(f"Using {device} device")
 
-# Define model
-class MLP(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.flatten = nn.Flatten()
-        self.linear_relu_stack = nn.Sequential(
-            nn.Linear(2, 512),
-            nn.ReLU(),
-            nn.Linear(512, 512),
-            nn.ReLU(),
-            nn.Linear(512, 2)
-        )
-
-    def forward(self, x):
-        x = self.flatten(x)
-        logits = self.linear_relu_stack(x)
-        return logits
-    
-class ResNet(MLP):
-    def __init__(self):
-        super().__init__()
-
-    def forward(self, x):
-        x = self.flatten(x)
-        logits = self.linear_relu_stack(x) + x
-        return logits
-    
 model = ResNet().to(device)
 print(model)
 
 if __name__ == "__main__":
-    exp_name = 'near90deg/'
-    data = pd.read_csv('../data/pendulum_exps/'+exp_name+'traindata.csv')
+    exp_name = 'diffInitialConditions'
+    data = pd.read_csv('../data/pendulum_exps/'+exp_name+'/traindata.csv')
     dim = 2
     print(data.head()) 
 
@@ -70,15 +45,15 @@ if __name__ == "__main__":
 
     # Create PyTorch datasets and dataloaders
     train_dataset = TensorDataset(X_train_tensor, y_train_tensor)
-    train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+    train_dataloader = DataLoader(train_dataset, batch_size=256, shuffle=True)
     test_dataset = TensorDataset(X_test_tensor, y_test_tensor)
-    test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    test_dataloader = DataLoader(test_dataset, batch_size=256, shuffle=False)
 
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
     # Training loop
-    num_epochs = 10
+    num_epochs = 20
     for epoch in range(num_epochs):
         model.train()
         running_loss = 0.0
@@ -93,7 +68,7 @@ if __name__ == "__main__":
             optimizer.step()
             running_loss += loss.item()
         
-        print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {running_loss / len(train_dataloader):.4f}')
+        print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {running_loss / len(train_dataloader):.8f}')
     
     print('Training finished!')
 
@@ -107,7 +82,7 @@ if __name__ == "__main__":
             outputs = model(inputs)
             test_loss += criterion(outputs.squeeze(), targets).item()
     test_loss /= len(test_dataloader)
-    print(f'Test Loss: {test_loss:.4f}')
+    print(f'Test Loss: {test_loss:.8f}')
 
-    torch.save(model.state_dict(), '../models/'+'pendulum_trained_resnet_near90deg.pth')
+    torch.save(model.state_dict(), '../models/'+'pendulum_trained_resnet_'+ exp_name +'.pth')
     print("Saved PyTorch Model State to pendulum_trained.pth")

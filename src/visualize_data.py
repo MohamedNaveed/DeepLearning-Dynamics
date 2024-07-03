@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+exp_name = 'diffInitialConditions'
 
 def plot_trajectory(t, X):
 
@@ -37,14 +38,15 @@ def plot_phase_portrait(X):
     plt.xlabel('Angle (rad)')
     plt.ylabel('Angular Velocity (rad/s)')
     plt.grid(True)
-    plt.show()
+    fig.savefig('../results/pendulum_exps/'+ exp_name +'/phasePortrait.png', bbox_inches='tight')
+    #plt.show()
 
     
 
 
 if __name__ == '__main__':
 
-    data = pd.read_csv('../data/pendulum_exps/diffInitialConditions/pendulum_diffinitialconditions_traindata.csv')
+    data = pd.read_csv('../data/pendulum_exps/diffInitialConditions/traindata.csv')
 
     # Extract input features (X) and target labels (y)
     X = data[['Pendulum Angle (rad)', 'Angular Velocity (rad/s)']].values  # Input features
