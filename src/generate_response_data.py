@@ -103,7 +103,7 @@ if __name__=='__main__':
     theta0_values = np.random.uniform(low=-(np.pi/2), high=np.pi/2, size=num_conditions)
     #omega0_values = np.random.uniform(low=-2*np.pi, high=2*np.pi, size=num_conditions)
      
-    theta0_values[0] = np.pi/2
+    #theta0_values[0] = np.pi/2
 
     for n in range(num_conditions):
         system = pendulum(np.array([[theta0_values[n]], [0]]),n_samples=10000)
