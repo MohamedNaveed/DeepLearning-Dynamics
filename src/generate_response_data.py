@@ -99,17 +99,18 @@ def write_to_csv(states,dim,path):
 if __name__=='__main__':
 
     # Generate random initial conditions uniformly
-    num_conditions = 1
+    num_conditions = 1000
     theta0_values = np.random.uniform(low=-(np.pi/2), high=np.pi/2, size=num_conditions)
     #omega0_values = np.random.uniform(low=-2*np.pi, high=2*np.pi, size=num_conditions)
      
-    theta0_values[0] = np.pi/3
+    #theta0_values[0] = np.pi/12
 
     for n in range(num_conditions):
-        system = pendulum(np.array([[theta0_values[n]], [0]]),n_samples=10000)
+        print(f'Progress {n}/{num_conditions}')
+        system = pendulum(np.array([[theta0_values[n]], [0]]),n_samples=1000)
         [timesteps, states] = system.simulate_data()
         #system.plot_response(timesteps, states)
 
-        path = '../data/pendulum_exps/diffInitialConditions/testdata_60.csv'
+        path = '../data/pendulum_exps/diffInitialConditions/traindata_1M.csv'
         write_to_csv(states, system.dim, path)
 

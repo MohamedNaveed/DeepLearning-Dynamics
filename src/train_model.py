@@ -7,7 +7,7 @@ from torchvision.transforms import ToTensor
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from network_models import ResNet
+from network_models import RK4Net #ResNet
 
 device = ("cuda"
         if torch.cuda.is_available()
@@ -17,7 +17,7 @@ device = ("cuda"
 
 print(f"Using {device} device")
 
-model = ResNet().to(device)
+model = RK4Net().to(device)
 print(model)
 
 if __name__ == "__main__":
@@ -84,5 +84,5 @@ if __name__ == "__main__":
     test_loss /= len(test_dataloader)
     print(f'Test Loss: {test_loss:.8f}')
 
-    torch.save(model.state_dict(), '../models/'+'pendulum_trained_resnet_'+ exp_name +'.pth')
+    torch.save(model.state_dict(), '../models/'+'pendulum_trained_rk4net_'+ exp_name +'.pth')
     print("Saved PyTorch Model State to pendulum_trained.pth")
