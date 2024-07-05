@@ -1,8 +1,7 @@
 import torch 
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
-from torchvision import datasets
-from torchvision.transforms import ToTensor
+
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -22,7 +21,7 @@ print(model)
 
 if __name__ == "__main__":
     exp_name = 'diffInitialConditions'
-    data = pd.read_csv('../data/pendulum_exps/'+exp_name+'/traindata.csv')
+    data = pd.read_csv('../data/pendulum_exps/'+exp_name+'/traindata_1M.csv')
     dim = 2
     print(data.head()) 
 
@@ -84,5 +83,5 @@ if __name__ == "__main__":
     test_loss /= len(test_dataloader)
     print(f'Test Loss: {test_loss:.8f}')
 
-    torch.save(model.state_dict(), '../models/'+'pendulum_trained_rk4net_'+ exp_name +'.pth')
+    torch.save(model.state_dict(), '../models/'+'pendulum_trained_1M_rk4net_'+ exp_name +'.pth')
     print("Saved PyTorch Model State to pendulum_trained.pth")

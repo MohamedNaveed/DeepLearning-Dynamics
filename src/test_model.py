@@ -1,8 +1,6 @@
 import torch 
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
-from torchvision import datasets
-from torchvision.transforms import ToTensor
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -24,9 +22,9 @@ print(f"Using {device} device")
 model = RK4Net().to(device)
 
 exp_name = 'diffInitialConditions'
-model.load_state_dict(torch.load('../models/'+'pendulum_trained_rk4net_' + exp_name + '.pth'))
+model.load_state_dict(torch.load('../models/'+'pendulum_trained_1M_rk4net_' + exp_name + '.pth'))
 
-data = pd.read_csv('../data/pendulum_exps/'+ exp_name +'/testdata_15.csv')
+data = pd.read_csv('../data/pendulum_exps/'+ exp_name +'/testdata_90.csv')
 #data = pd.read_csv('../data/pendulum_exps/pendulum_testdata.csv')
 
 # Extract input features (X) and target labels (y)
@@ -122,7 +120,7 @@ ax2.legend()
 # Adjust layout to prevent overlap
 plt.tight_layout()
 plt.show()
-fig.savefig('../results/pendulum_exps/'+ exp_name +'/rk4net_seq_prediction_15.png', bbox_inches='tight')
+fig.savefig('../results/pendulum_exps/'+ exp_name +'/rk4net_seq_prediction_90.png', bbox_inches='tight')
 
 
 t = np.linspace(0,n_samples*0.01,n_samples)
@@ -151,6 +149,6 @@ ax2.legend()
 # Adjust layout to prevent overlap
 plt.tight_layout()
 plt.show()
-fig.savefig('../results/pendulum_exps/'+ exp_name +'/rk4net_1step_prediction_15.png', bbox_inches='tight')
+fig.savefig('../results/pendulum_exps/'+ exp_name +'/rk4net_1step_prediction_90.png', bbox_inches='tight')
 
 
