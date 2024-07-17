@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 
-filename = 'traindata_100K_sequence.csv'
+filename = 'testdata_sequence_90deg.csv'
 path = f'../data/pendulum_exps/diffInitialConditions/{filename}'
 
 class pendulum():
@@ -145,11 +145,11 @@ def create_sequences(df, seq_length):
 if __name__=='__main__':
 
     # Generate random initial conditions uniformly
-    num_conditions = 100
+    num_conditions = 1
     theta0_values = np.random.uniform(low=-(np.pi/2), high=np.pi/2, size=num_conditions)
     #omega0_values = np.random.uniform(low=-2*np.pi, high=2*np.pi, size=num_conditions)
      
-    #theta0_values[0] = np.pi/12
+    theta0_values[0] = np.pi/2
 
     for n in range(num_conditions):
         print(f'Progress {n}/{num_conditions}')
