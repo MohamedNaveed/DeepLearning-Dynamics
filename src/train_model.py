@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader, TensorDataset
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from network_models import RK4Net #ResNet
+from network_models import LSTMNet #ResNet RK4Net
 
 device = ("cuda"
         if torch.cuda.is_available()
@@ -16,12 +16,15 @@ device = ("cuda"
 
 print(f"Using {device} device")
 
-model = RK4Net().to(device)
+network = 'lstm'
+model = LSTMNet(device = device).to(device)
 print(model)
 
 if __name__ == "__main__":
+
     exp_name = 'diffInitialConditions'
-    data = pd.read_csv('../data/pendulum_exps/'+exp_name+'/traindata_1M.csv')
+    file_name = 'traindata_1M.csv'
+    data = pd.read_csv(f'../data/pendulum_exps/{exp_name}/{file_name}')
     dim = 2
     print(data.head()) 
 
@@ -56,14 +59,17 @@ if __name__ == "__main__":
     for epoch in range(num_epochs):
         model.train()
         running_loss = 0.0
+
         for inputs, targets in train_dataloader:
     
             inputs, targets = inputs.to(device), targets.to(device)
             
             optimizer.zero_grad()
+            
             outputs = model(inputs)
             loss = criterion(outputs.squeeze(), targets)
-            loss.backward()
+            loss.backward() #retain_graph=True
+            
             optimizer.step()
             running_loss += loss.item()
         
@@ -82,6 +88,6 @@ if __name__ == "__main__":
             test_loss += criterion(outputs.squeeze(), targets).item()
     test_loss /= len(test_dataloader)
     print(f'Test Loss: {test_loss:.8f}')
-
-    torch.save(model.state_dict(), '../models/'+'pendulum_trained_1M_rk4net_'+ exp_name +'.pth')
-    print("Saved PyTorch Model State to pendulum_trained.pth")
+    model_path = f"../models/pendulum_trained_1M_{network}_{exp_name}.pth"
+    torch.save(model.state_dict(), model_path)
+    print(f"Saved PyTorch Model State to {model_path}")

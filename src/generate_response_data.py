@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+
+filename = 'traindata_100K_sequence.csv'
+path = f'../data/pendulum_exps/diffInitialConditions/{filename}'
+
 class pendulum():
     def __init__(self,x0, n_samples=1000):
         self.x0 = x0
@@ -70,6 +74,7 @@ class pendulum():
 
 def write_to_csv(states,dim,path):
 
+
     dataset_size = states.shape[1]
     #print('dataset_size=', dataset_size)
 
@@ -79,27 +84,68 @@ def write_to_csv(states,dim,path):
     'Pendulum Angle next (rad)': states[0,1:dataset_size],
     'Angular Velocity next (rad/s)': states[1,1:dataset_size],})
 
-    csv_file_path = path
+    # Check if the file already exists
+    try:
+        # Read existing data from the CSV file (if it exists)
+        existing_data = pd.read_csv(path)
+    except FileNotFoundError:
+        data.to_csv(path, index=False)
+    else:
+        # Append the new data to the existing file
+        data.to_csv(path, mode='a', header=False, index=False)
+
+def write_sequence_to_csv(states, dim, path, seq_len = 10):
 
     # Check if the file already exists
     try:
         # Read existing data from the CSV file (if it exists)
-        existing_data = pd.read_csv(csv_file_path)
+        existing_data = pd.read_csv(path)
     except FileNotFoundError:
         # If the file doesn't exist, create a new file with the data
-        data.to_csv(csv_file_path, index=False)
-    else:
-        # Append the new data to the existing file
-        data.to_csv(csv_file_path, mode='a', header=False, index=False)
-
-
-
+        empty_df = pd.DataFrame()
+        empty_df.to_csv(path,header=False, index=False)
     
+    data = {
+    'Angle': states[0,:],
+    'AngularVelocity': states[1,:]
+    }
+    dataset_size = states.shape[1]
+    #print('dataset_size=', dataset_size)
+    df = pd.DataFrame(data)
+    
+    # Create sequences
+    sequences = create_sequences(df, seq_len)
+
+    # Flatten the sequences for storage
+    flattened_data = []
+
+    for input_seq, output_seq in sequences:
+        input_flat = input_seq.flatten()
+        output_flat = output_seq.flatten()
+        flattened_data.append(np.concatenate((input_flat, output_flat)))
+
+    # Create a DataFrame from the flattened data
+    flattened_df = pd.DataFrame(flattened_data)
+
+    # Save the DataFrame to a CSV file
+    flattened_df.to_csv(path, index=False)
+
+
+def create_sequences(df, seq_length):
+    sequences = []
+    for i in range(len(df) - seq_length + 1):
+        input_seq = df[['Angle', 'AngularVelocity']].iloc[i:i+seq_length].values
+        output_seq = df[['Angle', 'AngularVelocity']].iloc[i+1:i+seq_length+1].values
+        sequences.append((input_seq, output_seq))
+    return sequences
+
+
+
 
 if __name__=='__main__':
 
     # Generate random initial conditions uniformly
-    num_conditions = 1000
+    num_conditions = 100
     theta0_values = np.random.uniform(low=-(np.pi/2), high=np.pi/2, size=num_conditions)
     #omega0_values = np.random.uniform(low=-2*np.pi, high=2*np.pi, size=num_conditions)
      
@@ -111,6 +157,5 @@ if __name__=='__main__':
         [timesteps, states] = system.simulate_data()
         #system.plot_response(timesteps, states)
 
-        path = '../data/pendulum_exps/diffInitialConditions/traindata_1M.csv'
-        write_to_csv(states, system.dim, path)
-
+        #write_to_csv(states, system.dim, path)
+        write_sequence_to_csv(states, system.dim, path)

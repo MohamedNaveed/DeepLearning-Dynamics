@@ -8,7 +8,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-from network_models import RK4Net#ResNet
+from network_models import LSTMNet #ResNet
 
 device = ("cuda"
         if torch.cuda.is_available()
@@ -19,10 +19,12 @@ device = ("cuda"
 print(f"Using {device} device")
 
         
-model = RK4Net().to(device)
+network = 'lstm'
+model = LSTMNet(device = device).to(device)
 
 exp_name = 'diffInitialConditions'
-model.load_state_dict(torch.load('../models/'+'pendulum_trained_1M_rk4net_' + exp_name + '.pth'))
+model_path = f"../models/pendulum_trained_1M_{network}_{exp_name}.pth"
+model.load_state_dict(torch.load(model_path))
 
 data = pd.read_csv('../data/pendulum_exps/'+ exp_name +'/testdata_90.csv')
 #data = pd.read_csv('../data/pendulum_exps/pendulum_testdata.csv')
@@ -52,7 +54,8 @@ with torch.no_grad():
         
         inputs, targets = inputs.to(device), targets.to(device)
         outputs = model(inputs)
-        outs_np = outputs.cpu().detach().numpy()
+        outs_np = outputs.squeeze().cpu().detach().numpy()
+
         outputs_size = outs_np.shape[0]
         outputs_array[batch*outputs_size:(batch+1)*outputs_size,:] = outs_np
         
@@ -88,7 +91,7 @@ with torch.no_grad():
         #print(f'Test loss = {test_loss}')
         
 test_loss /= t_steps
-print(f'Recursive Test Loss: {test_loss:.8f}')
+print(f'Recursive Test Loss (per step): {test_loss:.8f}')
 
 
 
@@ -120,7 +123,7 @@ ax2.legend()
 # Adjust layout to prevent overlap
 plt.tight_layout()
 plt.show()
-fig.savefig('../results/pendulum_exps/'+ exp_name +'/rk4net_seq_prediction_90.png', bbox_inches='tight')
+fig.savefig(f'../results/pendulum_exps/{exp_name}/{network}_seq_prediction_90.png', bbox_inches='tight')
 
 
 t = np.linspace(0,n_samples*0.01,n_samples)
@@ -149,6 +152,6 @@ ax2.legend()
 # Adjust layout to prevent overlap
 plt.tight_layout()
 plt.show()
-fig.savefig('../results/pendulum_exps/'+ exp_name +'/rk4net_1step_prediction_90.png', bbox_inches='tight')
+fig.savefig(f'../results/pendulum_exps/{exp_name}/{network}_1step_prediction_90.png', bbox_inches='tight')
 
 
