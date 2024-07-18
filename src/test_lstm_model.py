@@ -20,7 +20,8 @@ print(f"Using {device} device")
 
 network = 'lstm'
 exp_name = 'diffInitialConditions'
-file_name = 'testdata_sequence_90deg.csv'
+angle = '15deg'
+file_name = f'testdata_sequence_{angle}.csv'
 
 model = LSTMNet(device = device).to(device)
 print(model)
@@ -101,7 +102,7 @@ if __name__ == "__main__":
                 #set initial conditions
                 predicted_1_step[0:seq_length,:] = inputs[0,:,:]
                 true_1_step[0:seq_length,:] = inputs[0,:,:]
-                print(f"inputs = {inputs[0,:,:]}, targets = {targets[0,:,:]}")
+                #print(f"inputs = {inputs[0,:,:]}, targets = {targets[0,:,:]}")
             
             inputs, targets = inputs.to(device), targets.to(device)
             outputs = model(inputs)
@@ -118,8 +119,7 @@ if __name__ == "__main__":
                 end_idx = start_idx + outputs_size
                 
             predicted_1_step[start_idx:end_idx,:] = outs_np[:,-1,:]
-            if batch == 0:
-                print(f"output = {outs_np[:,-1,:]}")
+            
             true_1_step[start_idx:end_idx,:] = targets.cpu().detach().numpy()[:,-1,:]
 
             test_loss += criterion(outputs.squeeze(), targets).item()
@@ -193,7 +193,7 @@ if __name__ == "__main__":
     # Adjust layout to prevent overlap
     plt.tight_layout()
     plt.show()
-    fig.savefig(f'../results/pendulum_exps/{exp_name}/{network}_seq_prediction_90.png', bbox_inches='tight')
+    fig.savefig(f'../results/pendulum_exps/{exp_name}/{network}_seq_prediction_{angle}.png', bbox_inches='tight')
 
 
     t = np.linspace(0,n_samples*dt,n_samples)
@@ -222,4 +222,4 @@ if __name__ == "__main__":
     # Adjust layout to prevent overlap
     plt.tight_layout()
     plt.show()
-    fig.savefig(f'../results/pendulum_exps/{exp_name}/{network}_1step_prediction_90.png', bbox_inches='tight')
+    fig.savefig(f'../results/pendulum_exps/{exp_name}/{network}_1step_prediction_{angle}.png', bbox_inches='tight')

@@ -4,8 +4,16 @@ import numpy as np
 import pandas as pd
 
 
-filename = 'traindata_sequence_100K.csv'
+filename = 'testdata_sequence_15deg.csv'
 path = f'../data/pendulum_exps/diffInitialConditions/{filename}'
+# Check if the file already exists
+try:
+    # Read existing data from the CSV file (if it exists)
+    existing_data = pd.read_csv(path)
+except FileNotFoundError:
+    # If the file doesn't exist, create a new file with the data
+    empty_df = pd.DataFrame()
+    empty_df.to_csv(path,header=False, index=False)
 
 class pendulum():
     def __init__(self,x0, n_samples=1000):
@@ -95,15 +103,6 @@ def write_to_csv(states,dim,path):
         data.to_csv(path, mode='a', header=False, index=False)
 
 def write_sequence_to_csv(states, dim, path, seq_len = 10):
-
-    # Check if the file already exists
-    try:
-        # Read existing data from the CSV file (if it exists)
-        existing_data = pd.read_csv(path)
-    except FileNotFoundError:
-        # If the file doesn't exist, create a new file with the data
-        empty_df = pd.DataFrame()
-        empty_df.to_csv(path,header=False, index=False)
     
     data = {
     'Angle': states[0,:],
@@ -128,7 +127,7 @@ def write_sequence_to_csv(states, dim, path, seq_len = 10):
     flattened_df = pd.DataFrame(flattened_data)
 
     # Save the DataFrame to a CSV file
-    flattened_df.to_csv(path, index=False)
+    flattened_df.to_csv(path, mode='a', header=False, index=False)
 
 
 def create_sequences(df, seq_length):
@@ -145,15 +144,15 @@ def create_sequences(df, seq_length):
 if __name__=='__main__':
 
     # Generate random initial conditions uniformly
-    num_conditions = 100
+    num_conditions = 1
     theta0_values = np.random.uniform(low=-(np.pi/2), high=np.pi/2, size=num_conditions)
     #omega0_values = np.random.uniform(low=-2*np.pi, high=2*np.pi, size=num_conditions)
      
-    #theta0_values[0] = np.pi/12
+    theta0_values[0] = np.pi/12
 
     for n in range(num_conditions):
         print(f'Progress {n}/{num_conditions}')
-        system = pendulum(np.array([[theta0_values[n]], [0]]),n_samples=1000)
+        system = pendulum(np.array([[theta0_values[n]], [0]]),n_samples=10000)
         [timesteps, states] = system.simulate_data()
         #system.plot_response(timesteps, states)
 
