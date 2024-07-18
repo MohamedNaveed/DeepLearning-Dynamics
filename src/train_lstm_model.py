@@ -18,7 +18,7 @@ print(f"Using {device} device")
 
 network = 'lstm'
 exp_name = 'diffInitialConditions'
-file_name = 'traindata_100K_sequence.csv'
+file_name = 'traindata_sequence_100K.csv'
 
 model = LSTMNet(device = device).to(device)
 print(model)
@@ -28,17 +28,6 @@ checkpoint = torch.load(model_path)
 model.load_state_dict(checkpoint)
 
 
-class PendulumDataset(Dataset):
-    def __init__(self, input_sequences, output_sequences):
-        self.input_sequences = input_sequences
-        self.output_sequences = output_sequences
-
-    def __len__(self):
-        return len(self.input_sequences)
-
-    def __getitem__(self, idx):
-        return self.input_sequences[idx], self.output_sequences[idx]
-    
 if __name__ == "__main__":
 
     
