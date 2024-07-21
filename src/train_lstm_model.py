@@ -18,14 +18,22 @@ print(f"Using {device} device")
 
 network = 'lstm'
 exp_name = 'diffInitialConditions'
-file_name = 'traindata_sequence_100K.csv'
+
+# Parameters
+seq_length = 50
+n_features = 2  # Number of features (Angle and AngularVelocity)
+
+file_name = f'traindata_sequence_{seq_length}q_100K.csv'
 
 model = LSTMNet(device = device).to(device)
 print(model)
 # load pretrained model.
-model_path = f"../models/pendulum_trained_{network}_{exp_name}.pth"
-checkpoint = torch.load(model_path)
-model.load_state_dict(checkpoint)
+model_path = f"../models/pendulum_trained_{network}_{exp_name}_{seq_length}q.pth"
+try:
+    checkpoint = torch.load(model_path)
+    model.load_state_dict(checkpoint)
+except:
+    print("No pretrained model found. Start with new model.")
 
 
 if __name__ == "__main__":
@@ -34,10 +42,6 @@ if __name__ == "__main__":
     df = pd.read_csv(f'../data/pendulum_exps/{exp_name}/{file_name}')
     dim = 2
     print(df.head()) 
-
-    # Parameters
-    seq_length = 10
-    n_features = 2  # Number of features (Angle and AngularVelocity)
 
     # Convert DataFrame rows back to sequences
     sequences = []
@@ -88,7 +92,7 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
     # Training loop
-    num_epochs = 100
+    num_epochs = 50
     for epoch in range(num_epochs):
         model.train()
         running_loss = 0.0

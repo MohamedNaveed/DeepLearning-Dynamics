@@ -20,7 +20,7 @@ print(f"Using {device} device")
 
 network = 'lstm'
 exp_name = 'diffInitialConditions'
-angle = '15deg'
+angle = 'intrain'
 file_name = f'testdata_sequence_{angle}.csv'
 
 model = LSTMNet(device = device).to(device)

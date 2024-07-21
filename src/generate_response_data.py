@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 
-filename = 'testdata_sequence_15deg.csv'
+filename = f'traindata_sequence_50q_100K.csv'
 path = f'../data/pendulum_exps/diffInitialConditions/{filename}'
 # Check if the file already exists
 try:
@@ -102,7 +102,7 @@ def write_to_csv(states,dim,path):
         # Append the new data to the existing file
         data.to_csv(path, mode='a', header=False, index=False)
 
-def write_sequence_to_csv(states, dim, path, seq_len = 10):
+def write_sequence_to_csv(states, dim, path, seq_len = 50):
     
     data = {
     'Angle': states[0,:],
@@ -144,15 +144,15 @@ def create_sequences(df, seq_length):
 if __name__=='__main__':
 
     # Generate random initial conditions uniformly
-    num_conditions = 1
+    num_conditions = 100
     theta0_values = np.random.uniform(low=-(np.pi/2), high=np.pi/2, size=num_conditions)
     #omega0_values = np.random.uniform(low=-2*np.pi, high=2*np.pi, size=num_conditions)
      
-    theta0_values[0] = np.pi/12
+    theta0_values[0] = -0.503323442261269
 
     for n in range(num_conditions):
         print(f'Progress {n}/{num_conditions}')
-        system = pendulum(np.array([[theta0_values[n]], [0]]),n_samples=10000)
+        system = pendulum(np.array([[theta0_values[n]], [0]]),n_samples=1000)
         [timesteps, states] = system.simulate_data()
         #system.plot_response(timesteps, states)
 
